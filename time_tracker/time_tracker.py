@@ -93,7 +93,6 @@ class TimeTracker:
                 f' Last session time: {self._time_active_last(active_block.start_time, finish_time)}'
                 # f'Time in task today: {self._time_active_today(active_task)}'
                 )
-        # return f'Task {active_task.name} was finished. Last session time: {self._time_active_last(active_block)}'
     
     def tasks_list(self):
         return self.session.query(Task).limit(-1).all()
