@@ -6,7 +6,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime
 Base = declarative_base()
-#conn = create_engine(f"sqlite:///{os.path.dirname(os.path.realpath(__file__))}/tasks.db", echo = True)
+
 
 class Task(Base):
    __tablename__ = 'tasks'
@@ -37,8 +37,6 @@ class TrackerDB:
    def create(self):
       engine = self._engine()
       self.meta_data = MetaData()
-      # tasks = self._create_tasks_table()
-      # work_block = self._create_work_block_table()
       self._create_tasks_table()
       self._create_work_block_table()
       self.meta_data.create_all(engine)
@@ -64,6 +62,3 @@ class TrackerDB:
        Column('start_time', Integer),
        Column('finish_time', Integer)
     )
-
-if __name__ == '__main__':
-   TrackerDB('test111.db').create()

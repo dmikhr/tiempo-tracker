@@ -17,9 +17,11 @@ class TimeTracker:
             self.session = TrackerDB(f'{db_dir}/tasks.db').connect()
 
     def task_add(self, name, description=''):
-        # handle - already exists, write test
-        # search for task, if exists - show error
-        # description - currently not implemented
+        """
+        handle - already exists, write test
+        search for task, if exists - show error
+        description - currently not implemented
+        """
         """add new task"""
         if len(self.session.query(Task).\
                             filter(Task.name == name).all()) == 0:
@@ -51,9 +53,11 @@ class TimeTracker:
         return f'Task {name} not found'
     
     def task_start(self, name):
-        # check if any task in progess already
-        # return message what task is running already
-        # handle task not found
+        """
+        check if any task in progess already
+        return message what task is running already
+        handle task not found
+        """
         if len(self.session.query(Task).filter(Task.name == name).all()) == 0:
             return f'Task {name} not found. Maybe task was incorrectly typed?'
         # if there is an active task - stop it first
@@ -127,19 +131,16 @@ class TimeTracker:
     def _time_active_today(self, task_id):
         """
         return amount of time spent on a given task today
+        change when new day starts
+        in case you were working for example up to 1 A.M. it makes sence to track that activity 
+        as previous day
+        hours after midnight
         """
-        # change when new day starts
-        # in case you were working for example up to 1 A.M. it makes sence to track that activity 
-        # as previous day
-        # hours after midnight 
         day_starts = 4
         seconds_in_hour = 60 * 60
         seconds_in_day = 24 * seconds_in_hour
         epoch_time = int(time.time())
         today_start_time = epoch_time - (epoch_time % (seconds_in_day)) + day_starts * seconds_in_hour
-        # today_work_blocks = self.session.query(WorkBlock).\
-        #                                  filter((WorkBlock.finish_time >= today_start_time)
-        #                                  & (WorkBlock.task_id == task_id)).all()
         today_work_blocks = self.session.query(WorkBlock).\
                                          filter(WorkBlock.finish_time >= today_start_time).\
                                          filter(WorkBlock.task_id == task_id).all()

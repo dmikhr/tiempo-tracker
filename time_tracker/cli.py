@@ -1,8 +1,6 @@
 import argparse
 from time_tracker.time_tracker import TimeTracker
 
-# help flag provides flag help
-# store_true actions stores argument as True
 
 class Cli:
     def __init__(self):
@@ -18,20 +16,13 @@ class Cli:
         self._run()
 
     def _run(self):
-        # pass
-        # no_arg = True
         for arg_name, method_name in self.methods_map.items():
             if self.args.get(arg_name):
-                print(f'calling with {arg_name}')
-                # if self.args[arg_name] get
-                # else response = method_name()
+                # print(f'calling with {arg_name}')
                 response = method_name(self.args[arg_name])
                 if response:
                     print(response)
-                # no_arg = False
                 break
-        # if no_arg:
-        #     print('Unknown parameter. Use --help to see available options')
 
     def _setup_arguments(self):
         self.parser.add_argument('-s', '--start',
@@ -50,9 +41,3 @@ class Cli:
         self.parser.add_argument('-st', '--stats',
                             help='Stats about task')
 
-
-def main():
-    Cli()
-
-if __name__ == '__main__':
-    main()
