@@ -6,6 +6,8 @@ from time_tracker.time_tracker import TimeTracker
 from time_tracker.db import Task, WorkBlock, TrackerDB
 from sqlalchemy.orm import sessionmaker
 
+TASKS_NUM = 3
+WORK_BLOCKS_PER_TASK = 2
 
 # generate random task name, currently not used to ensure tests consistency
 def gen_task_name():
@@ -28,14 +30,14 @@ def test_db():
     MINUTE = 60
 
     # gen names in list outside fixture so it can be used to check values
-    for i in range(3):
+    for i in range(1, TASKS_NUM+1):
         session.add(
-                    Task(name = f'Task {i + 1}', 
+                    Task(name = f'Task {i}', 
                          description = fake.text(max_nb_chars=40))
                     )
         session.commit()
 
-        for j in range (2):
+        for j in range (1, WORK_BLOCKS_PER_TASK+1):
             session.add(
                         WorkBlock(task_id = j,
                                   start_time = TIME_BASE + (j - 1) * 10 * MINUTE,
@@ -158,3 +160,8 @@ def test_task_status(test_db):
     response = time_tracker.task_status()
     assert response.find('Task in progress') > -1
     assert response.find('No task is active') == -1
+
+def test_tasks_list(test_db):
+    time_tracker = TimeTracker(test_db)
+    tasks_list = time_tracker.tasks_list()
+    assert set(tasks_list.split('\n')) == set([f'Task {i}' for i in range(1, TASKS_NUM+1)])

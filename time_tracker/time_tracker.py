@@ -96,8 +96,17 @@ class TimeTracker:
                 )
     
     def tasks_list(self):
-        return self.session.query(Task).limit(-1).all()
-    
+        # to-do - implement sorting
+        active_task_id = -1
+        tasks = self.session.query(Task).limit(-1).all()
+        if self._any_active_task():
+            active_task_id = self.session.query(WorkBlock).\
+                                        filter(WorkBlock.finish_time == None).one().task_id
+        tasks_output = []
+        for task in tasks:
+            tasks_output.append(f"{task.name}{' (in progress)' if task.id == active_task_id else ''}")
+        return '\n'.join(tasks_output)
+
     def tasks_stats(self):
         """
         will be implemented in future versions
