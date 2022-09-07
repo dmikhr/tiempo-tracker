@@ -1,9 +1,17 @@
 [tool.poetry]
-name = "py_time_tracker"
+name = "tiempo_tracker"
 version = "0.1.0"
 description = ""
 authors = ["Dmitrii Khramtsov <dmitrypkh@gmail.com>"]
 license = "MIT"
+
+packages = [{ include = "time_tracker" }]
+classifiers = [
+  'Environment :: Console'
+]
+
+[tool.poetry.scripts]
+trt = "time_tracker.__main__:main"
 
 [tool.poetry.dependencies]
 python = "^3.9"
