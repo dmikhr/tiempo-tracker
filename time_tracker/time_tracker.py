@@ -54,17 +54,26 @@ class TimeTracker:
         # check if any task in progess already
         # return message what task is running already
         # handle task not found
-        if len(self.session.query(Task).filter(Task.name == name).all()) == 1:
-            task_id = self.session.query(Task).filter(Task.name == name).one().id
-            self.session.add(
-                            WorkBlock(task_id = task_id,
-                                    start_time = int(time.time()))
-                            )
-            self.session.commit()
-
-            return f'Task {name} is in progress now...'
-        else:
+        if len(self.session.query(Task).filter(Task.name == name).all()) == 0:
             return f'Task {name} not found. Maybe task was incorrectly typed?'
+        # if there is an active task - stop it first
+        # if active task is the same - show message
+        if self._any_active_task():
+            task_id = self.session.query(Task).filter(Task.name == name).one()
+            if self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).\
+                                             order_by(desc(WorkBlock.start_time)).\
+                                             one().task_id == task_id:
+                return f'Task {name} is already in progress'
+            self.task_finish()
+        task_id = self.session.query(Task).filter(Task.name == name).one().id
+        self.session.add(
+                        WorkBlock(task_id = task_id,
+                                  start_time = int(time.time()))
+                        )
+        self.session.commit()
+
+        return f'Task {name} is in progress now...'
+
     
     def task_finish(self):
         # refactor - get_active_task
@@ -107,9 +116,9 @@ class TimeTracker:
         # else:
         #     print('No task in progress')
 
-    def _active_task(self):
-        self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).\
-                                      order_by(desc(WorkBlock.start_time)).one()
+    def _any_active_task(self):
+        return len(self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).\
+                                             order_by(desc(WorkBlock.start_time)).all()) == 1
 
     def _time_active_last(self, start_time, finish_time):
         time_delta = finish_time - start_time

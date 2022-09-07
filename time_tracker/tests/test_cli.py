@@ -98,8 +98,40 @@ def test_task_start(test_db):
     assert work_blocks_num_after == work_blocks_num_after2
 
 
+def test_task_start_twice(test_db):
+    # start same task twice
+    time_tracker = TimeTracker(test_db)
+    time_tracker.task_start('Task 1')
+    active_task_id1 = test_db.query(WorkBlock).\
+                              filter(WorkBlock.finish_time == None).one().task_id
+    time_tracker.task_start('Task 1')
+    active_task_id2 = test_db.query(WorkBlock).\
+                              filter(WorkBlock.finish_time == None).one().task_id
+    active_tasks_num = len(test_db.query(WorkBlock).\
+                           filter(WorkBlock.finish_time == None).all())
+
+    assert active_tasks_num == 1
+    assert active_task_id1 == active_task_id2
+
+
+def test_task_start_second(test_db):
+    # start new task when another is in progress
+    time_tracker = TimeTracker(test_db)
+    time_tracker.task_start('Task 1')
+    active_task_id1 = test_db.query(WorkBlock).\
+                              filter(WorkBlock.finish_time == None).one().task_id
+    time_tracker.task_start('Task 2')
+    work_blocks_num_after = len(test_db.query(WorkBlock).limit(-1).all())
+    active_task_id2 = test_db.query(WorkBlock).\
+                              filter(WorkBlock.finish_time == None).one().task_id
+
+    assert active_task_id1 ==  1
+    assert active_task_id2 ==  2
+
+
 def test_task_finish(test_db):
     time_tracker = TimeTracker(test_db)
+
     active_tasks_num_before1 = len(test_db.query(WorkBlock).\
                                  filter(WorkBlock.finish_time == None).all())
     time_tracker.task_start('Task 1')
@@ -116,14 +148,3 @@ def test_task_finish(test_db):
 
     # should handle correctly attempt to finish task twice
     time_tracker.task_finish()
-
-
-# # trying to finish task that is not active
-# def test_task_start_not_active(test_db):
-#     time_tracker = TimeTracker(test_db)
-#     time_tracker.task_start('Task 1')
-#     time_tracker.task_finish()   
-#     active_tasks_num = len(test_db.query(WorkBlock).\
-#                            filter(WorkBlock.finish_time == None).all())
-
-#     assert active_tasks_num == 0
