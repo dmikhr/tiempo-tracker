@@ -61,7 +61,6 @@ class TimeTracker:
         if self._any_active_task():
             task_id = self.session.query(Task).filter(Task.name == name).one()
             if self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).\
-                                             order_by(desc(WorkBlock.start_time)).\
                                              one().task_id == task_id:
                 return f'Task {name} is already in progress'
             self.task_finish()
@@ -77,13 +76,10 @@ class TimeTracker:
     
     def task_finish(self):
         # refactor - get_active_task
-        if len(self.session.query(WorkBlock).\
-                                   filter(WorkBlock.finish_time == None).\
-                                   order_by(desc(WorkBlock.start_time)).all()) == 0:
+        if not self._any_active_task():
             return 'No task is in progress. Start task first.'
         active_block = self.session.query(WorkBlock).\
-                                   filter(WorkBlock.finish_time == None).\
-                                   order_by(desc(WorkBlock.start_time)).one()
+                                   filter(WorkBlock.finish_time == None).one()
         active_task = self.session.query(Task).\
                                    filter(Task.id == active_block.task_id).one()
 
@@ -117,8 +113,7 @@ class TimeTracker:
         #     print('No task in progress')
 
     def _any_active_task(self):
-        return len(self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).\
-                                             order_by(desc(WorkBlock.start_time)).all()) == 1
+        return len(self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).all()) == 1
 
     def _time_active_last(self, start_time, finish_time):
         time_delta = finish_time - start_time
