@@ -11,7 +11,7 @@ class TimeTracker:
             self.session = session
         else:
             db_dir = os.path.dirname(os.path.realpath(__file__))
-            self.session = TrackerDB(f'{db_dir}/tasks.db').connect()
+            self.session = TrackerDB(f'{db_dir}/tracker.db').connect()
 
     def task_add(self, name, description=''):
         """
