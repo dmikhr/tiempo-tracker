@@ -68,20 +68,27 @@ class TimeTracker:
     
     def task_finish(self):
         # refactor - get_active_task
+        if len(self.session.query(WorkBlock).\
+                                   filter(WorkBlock.finish_time == None).\
+                                   order_by(desc(WorkBlock.start_time)).all()) == 0:
+            return 'No task is in progress. Start task first.'
         active_block = self.session.query(WorkBlock).\
                                    filter(WorkBlock.finish_time == None).\
                                    order_by(desc(WorkBlock.start_time)).one()
         active_task = self.session.query(Task).\
                                    filter(Task.id == active_block.task_id).one()
-        stmt = update(WorkBlock).where(WorkBlock.id == active_task.id).\
-                                 values(finish_time=int(time.time()))
-        self.session.execute(stmt)
+
+        finish_time = int(time.time())
+
+        active_block.finish_time = finish_time
         self.session.commit()
+        self.session.flush()
 
         return (f'Task {active_task.name} was finished.'
-                f'Last session time: {self._time_active_last(active_block)}'
+                f' Last session time: {self._time_active_last(active_block.start_time, finish_time)}'
                 # f'Time in task today: {self._time_active_today(active_task)}'
                 )
+        # return f'Task {active_task.name} was finished. Last session time: {self._time_active_last(active_block)}'
     
     def tasks_list(self):
         return self.session.query(Task).limit(-1).all()
@@ -104,8 +111,8 @@ class TimeTracker:
         self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).\
                                       order_by(desc(WorkBlock.start_time)).one()
 
-    def _time_active_last(self, active_task):
-        time_delta = active_task.finish_time - active_task.start_time
+    def _time_active_last(self, start_time, finish_time):
+        time_delta = finish_time - start_time
         return str(datetime.timedelta(seconds=time_delta))
 
     def _time_active_today(self):

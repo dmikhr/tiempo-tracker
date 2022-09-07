@@ -98,14 +98,24 @@ def test_task_start(test_db):
     assert work_blocks_num_after == work_blocks_num_after2
 
 
-# def test_task_finish(test_db):
-#     time_tracker = TimeTracker(test_db)
-#     time_tracker.task_start('Task 1')
-#     time_tracker.task_finish()   
-#     active_tasks_num = len(test_db.query(WorkBlock).\
-#                            filter(WorkBlock.finish_time == None).all())
+def test_task_finish(test_db):
+    time_tracker = TimeTracker(test_db)
+    active_tasks_num_before1 = len(test_db.query(WorkBlock).\
+                                 filter(WorkBlock.finish_time == None).all())
+    time_tracker.task_start('Task 1')
+    active_tasks_num_before = len(test_db.query(WorkBlock).\
+                                 filter(WorkBlock.finish_time == None).all())
 
-#     assert active_tasks_num == 0
+    time_tracker.task_finish()
+    active_tasks_num_after = len(test_db.query(WorkBlock).\
+                                 filter(WorkBlock.finish_time == None).all())
+
+    assert active_tasks_num_before1 == 0
+    assert active_tasks_num_before == 1
+    assert active_tasks_num_after == 0
+
+    # should handle correctly attempt to finish task twice
+    time_tracker.task_finish()
 
 
 # # trying to finish task that is not active
