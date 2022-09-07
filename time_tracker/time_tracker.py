@@ -91,7 +91,7 @@ class TimeTracker:
 
         return (f'Task {active_task.name} was finished.'
                 f' Last session time: {self._time_active_last(active_block.start_time, finish_time)}'
-                # f'Time in task today: {self._time_active_today(active_task)}'
+                f'Time in task today: {self._time_active_today(active_task.id)}'
                 )
     
     def tasks_list(self):
@@ -114,7 +114,7 @@ class TimeTracker:
                                    filter(Task.id == active_block.task_id).one()
         return (f'Task in progress: {active_task.name}'
                 f' Current session time: {self._time_active_last(active_block.start_time, int(time.time()))}'
-                # f'Time in task today: {self._time_active_today(active_task)}'
+                f'Time in task today: {self._time_active_today(active_task.id)}'
                 )
 
     def _any_active_task(self):
@@ -124,8 +124,30 @@ class TimeTracker:
         time_delta = finish_time - start_time
         return str(datetime.timedelta(seconds=time_delta))
 
-    def _time_active_today(self):
-        pass
+    def _time_active_today(self, task_id):
+        """
+        return amount of time spent on a given task today
+        """
+        # change when new day starts
+        # in case you were working for example up to 1 A.M. it makes sence to track that activity 
+        # as previous day
+        # hours after midnight 
+        day_starts = 4
+        seconds_in_hour = 60 * 60
+        seconds_in_day = 24 * seconds_in_hour
+        epoch_time = int(time.time())
+        today_start_time = epoch_time - (epoch_time % (seconds_in_day)) + day_starts * seconds_in_hour
+        # today_work_blocks = self.session.query(WorkBlock).\
+        #                                  filter((WorkBlock.finish_time >= today_start_time)
+        #                                  & (WorkBlock.task_id == task_id)).all()
+        today_work_blocks = self.session.query(WorkBlock).\
+                                         filter(WorkBlock.finish_time >= today_start_time).\
+                                         filter(WorkBlock.task_id == task_id).all()
+
+        today_wrok_time = 0
+        for today_work_block in today_work_blocks:
+            today_wrok_time += (today_work_block.finish_time - today_work_block.start_time)
+        return str(datetime.timedelta(seconds=today_wrok_time))
 
 # fix multiple null records
 # self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).delete()
