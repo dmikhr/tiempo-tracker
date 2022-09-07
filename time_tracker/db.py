@@ -1,10 +1,8 @@
-import os
 from sqlalchemy import MetaData, Table, create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from datetime import datetime
 Base = declarative_base()
 
 

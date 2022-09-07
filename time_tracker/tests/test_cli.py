@@ -1,12 +1,10 @@
 import pytest
 import string
 from faker import Faker
-import time, random
+import random
 from time_tracker.time_tracker import TimeTracker
 from time_tracker.db import Task, WorkBlock, TrackerDB
-from sqlalchemy import Table, create_engine, desc, MetaData
-from sqlalchemy.orm import sessionmaker, registry
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.orm import sessionmaker
 
 
 # generate random task name, currently not used to ensure tests consistency
