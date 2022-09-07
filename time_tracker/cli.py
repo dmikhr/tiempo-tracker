@@ -7,8 +7,10 @@ class Cli:
         self.time_tracker = TimeTracker()
         self.methods_map = {'start': lambda task_name: self.time_tracker.task_start(task_name),
                             'add': lambda task_name: self.time_tracker.task_add(task_name),
-                            'finish': lambda task_name: self.time_tracker.task_finish(),
+                            'finish': lambda _: self.time_tracker.task_finish(),
                             'remove': lambda task_name: self.time_tracker.task_remove(task_name),
+                            'list': lambda _: self.time_tracker.tasks_list(),
+                            'stats': lambda _: self.time_tracker.tasks_list(),
                             }
         self.parser = argparse.ArgumentParser()
         self._setup_arguments()

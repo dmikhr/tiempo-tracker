@@ -99,7 +99,10 @@ class TimeTracker:
         return self.session.query(Task).limit(-1).all()
     
     def tasks_stats(self):
-        pass
+        """
+        will be implemented in future versions
+        """
+        return 'Feature is under development'
 
     def task_status(self):
         """
