@@ -148,3 +148,15 @@ def test_task_finish(test_db):
 
     # should handle correctly attempt to finish task twice
     time_tracker.task_finish()
+
+
+def test_task_status(test_db):
+    time_tracker = TimeTracker(test_db)
+    response = time_tracker.task_status()
+    assert response.find('Task in progress') == -1
+    assert response.find('No task is active') > -1
+
+    time_tracker.task_start('Task 1')
+    response = time_tracker.task_status()
+    assert response.find('Task in progress') > -1
+    assert response.find('No task is active') == -1

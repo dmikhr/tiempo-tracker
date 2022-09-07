@@ -105,11 +105,17 @@ class TimeTracker:
         shows whether there is a task in progress
         if any task is active - show how much time you're working on it
         """
-        pass
-        # if (task := get_active_task()):
-        #     print(f"Active task: {task.name}\nTime in progress (uninterrupted): {task.time_uninterrupted}\n Total today: {task_time_today}")
-        # else:
-        #     print('No task in progress')
+        # to-do: refactor task_finish and task_status
+        if not self._any_active_task():
+            return 'No task is active'
+        active_block = self.session.query(WorkBlock).\
+                                   filter(WorkBlock.finish_time == None).one()
+        active_task = self.session.query(Task).\
+                                   filter(Task.id == active_block.task_id).one()
+        return (f'Task in progress: {active_task.name}'
+                f' Current session time: {self._time_active_last(active_block.start_time, int(time.time()))}'
+                # f'Time in task today: {self._time_active_today(active_task)}'
+                )
 
     def _any_active_task(self):
         return len(self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).all()) == 1
