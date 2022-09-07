@@ -18,6 +18,10 @@ class Cli:
         self._run()
 
     def _run(self):
+        if self._no_args():
+            self.parser.print_help()
+            print('\nNO PARAMETERS WERE SUPPLIED. SEE OPTIONS ABOVE')
+            return
         for arg_name, method_name in self.methods_map.items():
             if self.args.get(arg_name):
                 # print(f'calling with {arg_name}')
@@ -38,8 +42,10 @@ class Cli:
                             help='Add new task')
         self.parser.add_argument('-r', '--remove',
                             help='Remove the task')
-        self.parser.add_argument('-l', '--list',
+        self.parser.add_argument('-l', '--list', action='store_true',
                             help='List of all tasks')
         self.parser.add_argument('-st', '--stats',
                             help='Stats about task')
 
+    def _no_args(self):
+        return set(self.args.values()) == set([None, False])
