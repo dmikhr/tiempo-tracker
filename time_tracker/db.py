@@ -26,6 +26,7 @@ class WorkBlock(Base):
 class TrackerDB:
    def __init__(self, db_name):
       self.db_name = db_name
+      self.testing = False
 
    def connect(self):
       engine = self._engine()
@@ -41,8 +42,11 @@ class TrackerDB:
       return engine
 
    def _engine(self):
-      return create_engine(f"sqlite+pysqlite:///{self.db_name}", 
-                           echo=True, future=True)     
+      if self.testing:
+         return create_engine(f"sqlite+pysqlite:///{self.db_name}",
+                              echo=True, future=True)
+      else:
+         return create_engine(f"sqlite+pysqlite:///{self.db_name}", future=True)
 
    def _create_tasks_table(self):
       return Table(

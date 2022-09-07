@@ -10,7 +10,6 @@ class TimeTracker:
         if session:
             self.session = session
         else:
-            # self.session = TrackerDB('tasks.db').connect()
             db_dir = os.path.dirname(os.path.realpath(__file__))
             self.session = TrackerDB(f'{db_dir}/tasks.db').connect()
 
@@ -61,7 +60,7 @@ class TimeTracker:
         # if there is an active task - stop it first
         # if active task is the same - show message
         if self._any_active_task():
-            task_id = self.session.query(Task).filter(Task.name == name).one()
+            task_id = self.session.query(Task).filter(Task.name == name).one().id
             if self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).\
                                              one().task_id == task_id:
                 return f'Task {name} is already in progress'
@@ -92,8 +91,8 @@ class TimeTracker:
         self.session.flush()
 
         return (f'Task {active_task.name} was finished.'
-                f' Last session time: {self._time_active_last(active_block.start_time, finish_time)}'
-                f'Time in task today: {self._time_active_today(active_task.id)}'
+                f'\nLast session time: {self._time_active_last(active_block.start_time, finish_time)}'
+                f'\nTime in task today: {self._time_active_today(active_task.id)}'
                 )
     
     def tasks_list(self):
@@ -115,8 +114,8 @@ class TimeTracker:
         active_task = self.session.query(Task).\
                                    filter(Task.id == active_block.task_id).one()
         return (f'Task in progress: {active_task.name}'
-                f' Current session time: {self._time_active_last(active_block.start_time, int(time.time()))}'
-                f'Time in task today: {self._time_active_today(active_task.id)}'
+                f'\nCurrent session time: {self._time_active_last(active_block.start_time, int(time.time()))}'
+                f'\nTime in task today: {self._time_active_today(active_task.id)}'
                 )
 
     def _any_active_task(self):
