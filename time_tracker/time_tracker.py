@@ -19,39 +19,52 @@ class TimeTracker:
     def task_add(self, name, description=''):
         # handle - already exists, write test
         # search for task, if exists - show error
+        # description - currently not implemented
         """add new task"""
-        self.session.add(
-                        Task(name = name, 
-                             description = description)
-                        )
-        self.session.commit()
+        if len(self.session.query(Task).\
+                            filter(Task.name == name).all()) == 0:
+            self.session.add(
+                            Task(name = name,
+                                description = description)
+                            )
+            self.session.commit()
 
-        return f'Task {name} was added'
+            return f'Task {name} was added'
+        else:
+            return f'Task {name} already exists'
 
+    # idea: replace if-check with decorator
+    # @check(error_msg)
     def task_remove(self, name):
         # handle - not found and write test
         """remove task"""
-        task_id = self.session.query(Task).filter(Task.name == name).one().id
-        # to-do: wrap in transaction
-        self.session.query(Task).filter(Task.id == task_id).delete()
-        self.session.query(WorkBlock).filter(WorkBlock.task_id == task_id).delete()
-        self.session.commit()
-        # transaction end
+        if len(self.session.query(Task).\
+                            filter(Task.name == name).all()) == 1:
+            task_id = self.session.query(Task).filter(Task.name == name).one().id
+            # to-do: wrap in transaction
+            self.session.query(Task).filter(Task.id == task_id).delete()
+            self.session.query(WorkBlock).filter(WorkBlock.task_id == task_id).delete()
+            self.session.commit()
+            # transaction end
 
-        return f'Task {name} was removed'
+            return f'Task {name} was removed'
+        return f'Task {name} not found'
     
     def task_start(self, name):
         # check if any task in progess already
         # return message what task is running already
         # handle task not found
-        task_id = self.session.query(Task).filter(Task.name == name).one().id
-        self.session.add(
-                        WorkBlock(task_id = task_id, 
-                                  start_time = int(time.time()))
-                        )
-        self.session.commit()
+        if len(self.session.query(Task).filter(Task.name == name).all()) == 1:
+            task_id = self.session.query(Task).filter(Task.name == name).one().id
+            self.session.add(
+                            WorkBlock(task_id = task_id,
+                                    start_time = int(time.time()))
+                            )
+            self.session.commit()
 
-        return f'Task {name} is in progress now...'
+            return f'Task {name} is in progress now...'
+        else:
+            return f'Task {name} not found. Maybe task was incorrectly typed?'
     
     def task_finish(self):
         # refactor - get_active_task
@@ -97,3 +110,7 @@ class TimeTracker:
 
     def _time_active_today(self):
         pass
+
+# fix multiple null records
+# self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).delete()
+# self.session.commit()

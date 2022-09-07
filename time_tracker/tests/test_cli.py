@@ -55,9 +55,9 @@ def test_task_add(test_db):
     assert test_db.query(Task).filter(Task.name == task_name).one().name == task_name
     assert len(test_db.query(Task).filter(Task.name == task_name).all()) == 1
 
-    # can't be two same tasks
-    # time_tracker.task_add(task_name)
-    # assert len(test_db.query(Task).filter(Task.name == task_name).all()) == 1
+    # can't be two tasks with same name
+    time_tracker.task_add(task_name)
+    assert len(test_db.query(Task).filter(Task.name == task_name).all()) == 1
 
 
 def test_task_remove(test_db):
@@ -77,6 +77,9 @@ def test_task_remove(test_db):
     assert work_blocks_before > 0
     assert work_blocks_after == 0
 
+    # try to delete task that doesn't exist
+    time_tracker.task_remove(task_to_delete)
+
 
 def test_task_start(test_db):
     work_blocks_num_before = len(test_db.query(WorkBlock).limit(-1).all())
@@ -88,6 +91,11 @@ def test_task_start(test_db):
 
     assert work_blocks_num_after == work_blocks_num_before + 1
     assert active_tasks_num == 1
+
+    # can't start task that doesn't exist
+    time_tracker.task_start('non_existent_task')
+    work_blocks_num_after2 = len(test_db.query(WorkBlock).limit(-1).all())
+    assert work_blocks_num_after == work_blocks_num_after2
 
 
 # def test_task_finish(test_db):
