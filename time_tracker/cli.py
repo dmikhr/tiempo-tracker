@@ -45,7 +45,7 @@ class Cli:
         self.parser.add_argument('-l', '--list', action='store_true',
                             help='List of all tasks')
         self.parser.add_argument('-st', '--stats',
-                            help='Stats about task')
+                            help='Stats about tasks')
 
     def _no_args(self):
         return set(self.args.values()) == set([None, False])

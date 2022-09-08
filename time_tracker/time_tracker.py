@@ -1,6 +1,7 @@
 from time_tracker.db import TrackerDB, Task, WorkBlock
 import time
 import datetime
+from pathlib import Path
 import os
 
 
@@ -11,7 +12,13 @@ class TimeTracker:
             self.session = session
         else:
             db_dir = os.path.dirname(os.path.realpath(__file__))
-            self.session = TrackerDB(f'{db_dir}/tracker.db').connect()
+            db_path = Path(f'{db_dir}/tracker.db')
+            if not db_path.is_file():
+                print('Database not found. Creating new one')
+                print("If you run app for the first time - it's normal behavior")
+                TrackerDB(str(db_path)).create()
+            self.session = TrackerDB(str(db_path)).connect()
+
         # can be used for testing purposes
         self.epoch_time = epoch_time
 
