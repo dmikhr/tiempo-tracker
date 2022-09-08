@@ -44,7 +44,7 @@ class Cli:
                             help='Remove the task')
         self.parser.add_argument('-l', '--list', action='store_true',
                             help='List of all tasks')
-        self.parser.add_argument('-st', '--stats',
+        self.parser.add_argument('-st', '--stats', action='store_true',
                             help='Stats about tasks')
 
     def _no_args(self):
