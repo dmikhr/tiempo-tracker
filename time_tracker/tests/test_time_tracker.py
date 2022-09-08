@@ -8,6 +8,11 @@ from sqlalchemy.orm import sessionmaker
 
 TASKS_NUM = 3
 WORK_BLOCKS_PER_TASK = 2
+# time is always the same to make tests consistent
+# set in epoch seconds
+TIME_BASE = 1662374970
+MINUTE = 60 # sec
+HOUR = 60 * MINUTE
 
 # generate random task name, currently not used to ensure tests consistency
 def gen_task_name():
@@ -24,11 +29,6 @@ def test_db():
     Session = sessionmaker(bind=engine)
     session = Session()
 
-    # time is always the same to make tests consistent
-    # set in epoch seconds
-    TIME_BASE = 1662374970
-    MINUTE = 60
-
     # gen names in list outside fixture so it can be used to check values
     for i in range(1, TASKS_NUM+1):
         session.add(
@@ -39,9 +39,9 @@ def test_db():
 
         for j in range (1, WORK_BLOCKS_PER_TASK+1):
             session.add(
-                        WorkBlock(task_id = j,
-                                  start_time = TIME_BASE + (j - 1) * 10 * MINUTE,
-                                  finish_time = TIME_BASE + (j - 1) * 20 * MINUTE)
+                        WorkBlock(task_id = i,
+                                  start_time = TIME_BASE + i * (j * 10 + j) * MINUTE,
+                                  finish_time = TIME_BASE + i * (j * 20 + j) * MINUTE)
                         )
         session.commit()
 
@@ -165,3 +165,15 @@ def test_tasks_list(test_db):
     time_tracker = TimeTracker(test_db)
     tasks_list = time_tracker.tasks_list()
     assert set(tasks_list.split('\n')) == set([f'Task {i}' for i in range(1, TASKS_NUM+1)])
+
+def test_tasks_stats(test_db):
+    time_tracker = TimeTracker(test_db, epoch_time=TIME_BASE)
+    # add task from previous day
+    test_db.add(
+                WorkBlock(task_id = 1,
+                          start_time = TIME_BASE - 24 * HOUR,
+                          finish_time = TIME_BASE - 24 * HOUR + 15 * MINUTE)
+                )
+    test_db.commit()
+
+    time_tracker.tasks_stats()

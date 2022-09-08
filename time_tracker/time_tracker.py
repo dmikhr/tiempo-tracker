@@ -5,13 +5,15 @@ import os
 
 
 class TimeTracker:
-    def __init__(self, session=None):
+    def __init__(self, session=None, epoch_time=None):
         # if no session was supplyed connect to default database
         if session:
             self.session = session
         else:
             db_dir = os.path.dirname(os.path.realpath(__file__))
             self.session = TrackerDB(f'{db_dir}/tracker.db').connect()
+        # can be used for testing purposes
+        self.epoch_time = epoch_time
 
     def task_add(self, name, description=''):
         """
@@ -105,14 +107,26 @@ class TimeTracker:
             tasks_output.append(f"{task.name}{' (in progress)' if task.id == active_task_id else ''}")
         return '\n'.join(tasks_output)
 
-    def tasks_stats(self, task_name):
+    def tasks_stats(self):
         """
         will be implemented in future versions
         time spent on each task. Show only tasks that were active today.
         Time is calculated for today (with respect to day_starts in _time_active_today())
         """
-        # today_work_blocks = self._work_blocks_today(self._task_id(task_name))
-        return 'Feature is under development'
+        today_active_tasks = {}
+        # idea for future improvements: implement with join
+        today_work_blocks_all = self.session.query(WorkBlock).\
+                                             filter(WorkBlock.finish_time >= self._today_start_time()).all()
+        # distinct on throws SADeprecationWarning, for reliability implement feature without it for now
+        task_id_distinct = set(map(lambda item: item.task_id, today_work_blocks_all))
+        for task_id in task_id_distinct:
+            task_name = self.session.query(Task).filter(Task.id == task_id).one().name
+            today_active_tasks[task_name] = self._time_active_today(task_id)
+        # consider moving to separate method
+        output_text = []
+        for task, time_str in today_active_tasks.items():
+            output_text.append(f'{task}\t{time_str}')
+        return '\n'.join(output_text)
 
     def task_status(self):
         """
@@ -147,20 +161,47 @@ class TimeTracker:
         today_work_time = 0
         for today_work_block in today_work_blocks:
             today_work_time += (today_work_block.finish_time - today_work_block.start_time)
-        return str(datetime.timedelta(seconds=today_work_time))
+        # in future development consider making _time_active_today return time in seconds and
+        # add another method to format time for output to keep time calculation
+        # and its representation separate
+        time_formatted = self._round_time_and_fromat(str(datetime.timedelta(seconds=today_work_time)))
+        time_decimal = self._time_to_decimal(time_formatted)
+        return f'{time_formatted} ({time_decimal})'
+
+    def _round_time_and_fromat(self, time_str):
+        """
+        remove seconds, round up if seconds >= 45 sec.
+        '0:20:00' -> '0:20', '0:20:35' -> '0:20'
+        assuming time blocks can't exceed 24hr - all stats currently works for 1 day data
+        can be implemented with str formatting, but here for educational purposes implemented from scratch
+        """
+        hr, min, sec = time_str.split(':')
+        if int(sec) > 45:
+            if int(min) < 59:
+                min = str(int(min) + 1)
+                if int(min) < 10:
+                    min = str(f'0{min}')
+            elif int(min) == 59:
+                min = '00'
+                hr = str(int(hr) + 1)
+        return f'{hr}:{min}'
+
+    def _time_to_decimal(self, time_str):
+        """
+        for long term time tracking in spreadsheets decimal time representation might be useful
+        for things like time management, task prioritisation analysis, etc.
+        """
+        hr, min = time_str.split(':')
+        return round((int(hr) * 60 + int(min)) / 60, 1)
+
 
     def _work_blocks_today(self, task_id):
         """
         in case you were working for example up to 1 A.M. it makes sence to track that activity 
         as previous day hours after midnight
         """
-        day_starts = 4 # hrs
-        seconds_in_hour = 60 * 60
-        seconds_in_day = 24 * seconds_in_hour
-        epoch_time = int(time.time())
-        today_start_time = epoch_time - (epoch_time % (seconds_in_day)) + day_starts * seconds_in_hour
         today_work_blocks = self.session.query(WorkBlock).\
-                                         filter(WorkBlock.finish_time >= today_start_time).\
+                                         filter(WorkBlock.finish_time >= self._today_start_time()).\
                                          filter(WorkBlock.task_id == task_id).all()
         return today_work_blocks
 
@@ -171,6 +212,12 @@ class TimeTracker:
         return len(self.session.query(Task).\
                                 filter(Task.name == task_name).all()) == 1
 
-# fix multiple null records
-# self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).delete()
-# self.session.commit()
+    def _today_start_time(self):
+        day_starts = 4 # hrs
+        seconds_in_hour = 60 * 60
+        seconds_in_day = 24 * seconds_in_hour
+        if self.epoch_time:
+            epoch_time = self.epoch_time
+        else:
+            epoch_time = int(time.time())
+        return epoch_time - (epoch_time % (seconds_in_day)) + day_starts * seconds_in_hour
