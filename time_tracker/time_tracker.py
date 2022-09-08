@@ -24,8 +24,8 @@ class TimeTracker:
         """add new task"""
         if not self._task_exists(name):
             self.session.add(
-                            Task(name = name,
-                                description = description)
+                            Task(name=name,
+                                 description=description)
                             )
             self.session.commit()
 
@@ -42,13 +42,14 @@ class TimeTracker:
             task_id = self._task_id(name)
             # to-do: wrap in transaction
             self.session.query(Task).filter(Task.id == task_id).delete()
-            self.session.query(WorkBlock).filter(WorkBlock.task_id == task_id).delete()
+            self.session.query(WorkBlock).filter(WorkBlock.task_id == task_id)\
+                                         .delete()
             self.session.commit()
             # transaction end
 
             return f'Task {name} was removed'
         return f'Task {name} not found'
-    
+
     def task_start(self, name):
         """
         check if any task in progess already
@@ -61,28 +62,29 @@ class TimeTracker:
         # if active task is the same - show message
         if self._any_active_task():
             task_id = self._task_id(name)
-            if self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).\
-                                             one().task_id == task_id:
+            if self.session.query(WorkBlock).\
+                    filter(WorkBlock.finish_time == None).\
+                    one().task_id == task_id:
                 return f'Task {name} is already in progress'
             self.task_finish()
         task_id = self._task_id(name)
         self.session.add(
-                        WorkBlock(task_id = task_id,
-                                  start_time = int(time.time()))
+                        WorkBlock(task_id=task_id,
+                                  start_time=int(time.time()))
                         )
         self.session.commit()
 
         return f'Task {name} is in progress now...'
 
-    
     def task_finish(self):
         # refactor - get_active_task
         if not self._any_active_task():
             return 'No task is in progress. Start task first.'
         active_block = self.session.query(WorkBlock).\
-                                   filter(WorkBlock.finish_time == None).one()
+                            filter(WorkBlock.finish_time == None).one()
         active_task = self.session.query(Task).\
-                                   filter(Task.id == active_block.task_id).one()
+                                   filter(Task.id == active_block.task_id)\
+                                    .one()
 
         finish_time = int(time.time())
 
@@ -94,7 +96,7 @@ class TimeTracker:
                 f'\nLast session time: {self._time_active_last(active_block.start_time, finish_time)}'
                 f'\nTime in task today: {self._time_active_today(active_task.id)}'
                 )
-    
+
     def tasks_list(self):
         # to-do - implement sorting
         active_task_id = -1
@@ -196,7 +198,7 @@ class TimeTracker:
 
     def _work_blocks_today(self, task_id):
         """
-        in case you were working for example up to 1 A.M. it makes sence to track that activity 
+        in case you were working for example up to 1 A.M. it makes sence to track that activity
         as previous day hours after midnight
         """
         today_work_blocks = self.session.query(WorkBlock).\
@@ -206,7 +208,7 @@ class TimeTracker:
 
     def _task_id(self, task_name):
         return self.session.query(Task).filter(Task.name == task_name).one().id
-    
+
     def _task_exists(self, task_name):
         return len(self.session.query(Task).\
                                 filter(Task.name == task_name).all()) == 1
