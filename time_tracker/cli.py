@@ -10,7 +10,7 @@ class Cli:
                             'finish': lambda _: self.time_tracker.task_finish(),
                             'remove': lambda task_name: self.time_tracker.task_remove(task_name),
                             'list': lambda _: self.time_tracker.tasks_list(),
-                            'stats': lambda _: self.time_tracker.tasks_list(),
+                            'stats': lambda _: self.time_tracker.tasks_stats()
                             }
         self.parser = argparse.ArgumentParser()
         self._setup_arguments()

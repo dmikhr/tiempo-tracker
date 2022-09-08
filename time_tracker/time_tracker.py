@@ -194,7 +194,6 @@ class TimeTracker:
         hr, min = time_str.split(':')
         return round((int(hr) * 60 + int(min)) / 60, 1)
 
-
     def _work_blocks_today(self, task_id):
         """
         in case you were working for example up to 1 A.M. it makes sence to track that activity 
