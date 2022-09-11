@@ -1,17 +1,24 @@
 Track time you've spent on different tasks. Then see how much time you've spent on each. 
 Continuation of [time_management](https://github.com/dmikhr/time_management) script idea.
+<br><br>
 
-### **Built with**
-Python, SQLAlchemy for managing database, SQLite as database (see [pyproject.toml](https://github.com/dmikhr/tiempo-tracker/blob/main/pyproject.toml) for details)
-<br>Testing: Pytest
+### **Development**
+Built with Python, Poetry, SQLAlchemy for managing database, SQLite as database (see [pyproject.toml](https://github.com/dmikhr/tiempo-tracker/blob/main/pyproject.toml) for details) 
+<br>Testing: Pytest<br>
+<br>Run package wihtout building: `poetry run python -m time_tracker [options]` in project directory
+<br>Example: `poetry run python -m time_tracker -a Task1`
+<br>Run tests: `poetry run pytest`
+<br>Package was tested on MacOS 11.2.3, Python 3.9
+<br><br>
 
 ### **Installation**
 **From source**
-<br>run `make build` and  then `make package-install` in package directory.
+<br>run `make build` and  then `make package-install` in the package directory.
 
 When you run app for the first time it will create database. You'll see a message:
 `Database not found. Creating new one`
-
+<br>
+<br>
 
 ### **Usage**
 tiempo-tracker can be invoked by `trt` command in terminal.
@@ -38,7 +45,7 @@ Then track the task:<br>
 To finish the task either start new one (add new task first if it doesn't exist yet):<br>
 `trt -s task2`
 <br>or finish task<br>
-`trt -f`<br><br>
+`trt -f`<br>
 Show all added tasks:
 `trt -l`<br>
 If particular task is in progress there will be `(in progress)` status behind this task. Example:
@@ -49,7 +56,7 @@ Flask_API_project
 Some_task
 ```
 
-Remove task if it no longer needed:<br>
+Remove task if it's no longer needed:<br>
 `trt -r`<br>
 
 See how much time you've spent on each task during the day:<br>
