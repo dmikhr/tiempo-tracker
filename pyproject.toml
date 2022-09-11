@@ -16,6 +16,7 @@ trt = "time_tracker.__main__:main"
 [tool.poetry.dependencies]
 python = "^3.9"
 SQLAlchemy = "^1.4.41"
+appdirs = "^1.4.4"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^5.0.4"
