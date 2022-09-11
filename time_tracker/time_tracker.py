@@ -2,6 +2,7 @@ from time_tracker.db import TrackerDB, Task, WorkBlock
 import time
 import datetime
 from pathlib import Path
+from appdirs import AppDirs
 import os
 
 
@@ -13,10 +14,14 @@ class TimeTracker:
         if session:
             self.session = session
         else:
-            db_dir = os.path.dirname(os.path.realpath(__file__))
+            dirs = AppDirs("tiempo_tracker", "dmikhr")
+            db_dir = Path(dirs.user_data_dir)
+            if not db_dir.is_dir():
+                print(f'creating app directory: {str(db_dir)}')
+                os.mkdir(str(db_dir))
             db_path = Path(f'{db_dir}/tracker.db')
             if not db_path.is_file():
-                print('Database not found. Creating new one')
+                print(f'Database not found. Creating new one: {str(db_path)}')
                 print("If you run app for the first time - it's normal behavior")
                 TrackerDB(str(db_path)).create()
             self.session = TrackerDB(str(db_path)).connect()
