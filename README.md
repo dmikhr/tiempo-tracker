@@ -5,7 +5,7 @@ Continuation of [time_management](https://github.com/dmikhr/time_management) scr
 ### **Development**
 Built with Python, Poetry, SQLAlchemy for managing database, SQLite as database (see [pyproject.toml](https://github.com/dmikhr/tiempo-tracker/blob/main/pyproject.toml) for details) 
 <br>Testing: Pytest<br>
-<br>Run package wihtout building: `poetry run python -m time_tracker [options]` in project directory
+<br>Run package without building: `poetry run python -m time_tracker [options]` in the project directory
 <br>Example: `poetry run python -m time_tracker -a Task1`
 <br>Run tests: `poetry run pytest`
 <br>Package was tested on MacOS 11.2.3, Python 3.9
