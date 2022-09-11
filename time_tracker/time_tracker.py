@@ -7,7 +7,9 @@ import os
 
 class TimeTracker:
     def __init__(self, session=None, epoch_time=None):
-        # if no session was supplyed connect to default database
+        """
+        establish database connection, creates new one if database doesn't exist
+        """
         if session:
             self.session = session
         else:
@@ -23,11 +25,6 @@ class TimeTracker:
         self.epoch_time = epoch_time
 
     def task_add(self, name, description=''):
-        """
-        handle - already exists, write test
-        search for task, if exists - show error
-        description - currently not implemented
-        """
         """add new task"""
         if not self._task_exists(name):
             self.session.add(
@@ -43,7 +40,6 @@ class TimeTracker:
     # idea: replace if-check with decorator
     # @check(error_msg)
     def task_remove(self, name):
-        # handle - not found and write test
         """remove task"""
         if self._task_exists(name):
             task_id = self._task_id(name)
@@ -59,9 +55,7 @@ class TimeTracker:
 
     def task_start(self, name):
         """
-        check if any task in progess already
-        return message what task is running already
-        handle task not found
+        start time tracking for a given :name: task
         """
         if not self._task_exists(name):
             return f'Task {name} not found. Maybe task was incorrectly typed?'
@@ -84,7 +78,7 @@ class TimeTracker:
         return f'Task {name} is in progress now...'
 
     def task_finish(self):
-        # refactor - get_active_task
+        """finish timke tracvking for an active task"""
         if not self._any_active_task():
             return 'No task is in progress. Start task first.'
         active_block = self.session.query(WorkBlock).\
@@ -105,7 +99,10 @@ class TimeTracker:
                 )
 
     def tasks_list(self):
-        # to-do - implement sorting
+        """
+        show list of existing tasks
+        if task tracking is active show '(in progress)' near task that is being tracked
+        """
         active_task_id = -1
         tasks = self.session.query(Task).limit(-1).all()
         if self._any_active_task():
@@ -118,9 +115,10 @@ class TimeTracker:
 
     def tasks_stats(self):
         """
-        will be implemented in future versions
-        time spent on each task. Show only tasks that were active today.
-        Time is calculated for today (with respect to day_starts in _time_active_today())
+        show how much time has been spent on each task during the day
+        show only tasks that were active today
+        time is calculated for today (with respect to day_starts in _time_active_today())
+        time is presented as a timestamp 0:00 and as decimal number (e.g. 2.5)
         """
         today_active_tasks = {}
         # idea for future improvements: implement with join
@@ -139,8 +137,8 @@ class TimeTracker:
 
     def task_status(self):
         """
-        shows whether there is a task in progress
-        if any task is active - show how much time you're working on it
+        show whether there is a task in progress
+        if any task is active - show how much time it is active
         """
         # to-do: refactor task_finish and task_status
         if not self._any_active_task():
@@ -163,8 +161,7 @@ class TimeTracker:
 
     def _time_active_today(self, task_id):
         """
-        return amount of time spent on a given task today
-        change when new day starts
+        return amount of time spent on a given task today change when new day starts
         """
         today_work_blocks = self._work_blocks_today(task_id)
         today_work_time = 0
@@ -179,12 +176,13 @@ class TimeTracker:
 
     def _round_time_and_fromat(self, time_str):
         """
-        remove seconds, round up if seconds >= 45 sec.
+        removes seconds, round up if seconds >= 45 sec.
         '0:20:00' -> '0:20', '0:20:35' -> '0:20'
-        assuming time blocks can't exceed 24hr - all stats currently works for 1 day data
+        assuming time blocks can't exceed 24 hrs - all stats currently works for 1 day data
         can be implemented with str formatting, but here for educational purposes implemented from scratch
         """
         hr, min, sec = time_str.split(':')
+        # round up if seconds > 45
         if int(sec) > 45:
             if int(min) < 59:
                 min = str(int(min) + 1)
@@ -197,6 +195,7 @@ class TimeTracker:
 
     def _time_to_decimal(self, time_str):
         """
+        convert timestamp like 0:00 to 0.0
         for long term time tracking in spreadsheets decimal time representation might be useful
         for things like time management, task prioritisation analysis, etc.
         """
@@ -204,10 +203,6 @@ class TimeTracker:
         return round((int(hr) * 60 + int(min)) / 60, 1)
 
     def _work_blocks_today(self, task_id):
-        """
-        in case you were working for example up to 1 A.M. it makes sence to track that activity
-        as previous day hours after midnight
-        """
         today_work_blocks = self.session.query(WorkBlock).\
                                          filter(WorkBlock.finish_time >= self._today_start_time()).\
                                          filter(WorkBlock.task_id == task_id).all()
@@ -221,6 +216,10 @@ class TimeTracker:
                                 filter(Task.name == task_name).all()) == 1
 
     def _today_start_time(self):
+        """
+        in case you were working for example up to 1 A.M. it makes sence to track it as
+        previous day  activity. By default set to 4 A.M.
+        """
         day_starts = 4 # hrs
         seconds_in_hour = 60 * 60
         seconds_in_day = 24 * seconds_in_hour
