@@ -1,33 +1,41 @@
+### Introduction
+---
 Track time you've spent on different tasks. Then see how much time you've spent on each. 
 Continuation of [time_management](https://github.com/dmikhr/time_management) script idea.
 <br><br>
 
 ### **Development**
-Built with Python, Poetry, SQLAlchemy for managing database, SQLite as database (see [pyproject.toml](https://github.com/dmikhr/tiempo-tracker/blob/main/pyproject.toml) for details) 
+---
+Built with Python, Poetry, SQLAlchemy for managing database, SQLite as database. 
 <br>Testing: Pytest<br>
 <br>Run package without building: `poetry run python -m time_tracker [options]` in the project directory
 <br>Example: `poetry run python -m time_tracker -a Task1`
 <br>Run tests: `poetry run pytest`
-<br>Package was tested on MacOS 11.2.3, Python 3.9
 <br><br>
 
 ### **Installation**
+---
 **From source**
-<br>run `make build` and  then `make package-install` in the package directory.
-
+<br>run `make build` and then `make package-install` in the package directory.
+<br>
+**PIP**<br>
+run `pip install tiempo-tracker`
+<br>
 When you run app for the first time it will create database. You'll see a message:
-`Database not found. Creating new one`
+`Database not found. Creating new one`. Also app will show path where database is stored.
 <br>
 <br>
 
 ### **Usage**
+---
 tiempo-tracker can be invoked by `trt` command in terminal.
 <br><br>Available options:
 ```
  -h, --help            show this help message and exit
   -s START, --start START
                         Start task by providing its name
-  -f, --finish          Finish current task. Task also can be finished by starting a different task
+  -f, --finish          Finish current task. Task also can be finished 
+                        by starting a different task
   -a ADD, --add ADD     Add new task
   -r REMOVE, --remove REMOVE
                         Remove the task
@@ -51,7 +59,7 @@ Show all added tasks:
 If particular task is in progress there will be `(in progress)` status behind this task. Example:
 ```
 Project_work
-Excercising (in progress)
+Exercising (in progress)
 Flask_API_project
 Some_task
 ```
