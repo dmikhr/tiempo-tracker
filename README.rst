@@ -1,3 +1,7 @@
+.. image:: https://api.codeclimate.com/v1/badges/bd649a97a34c7f8c4634/maintainability
+   :target: https://codeclimate.com/github/dmikhr/tiempo-tracker/maintainability
+   :alt: Maintainability
+
 Introduction
 =========================
 Track time you've spent on different tasks. Then see how much time you've spent on each. 
@@ -60,6 +64,7 @@ Then track the task:
 ``trt -s task1``
 
 To finish the task either start new one (add new task first if it doesn't exist yet):
+
 ``trt -s task2``
 
 or finish task
