@@ -1,13 +1,18 @@
 [tool.poetry]
-name = "tiempo_tracker"
+name = "tiempo-tracker"
 version = "0.1.0"
-description = ""
+description = "Easy to use CLI time tracker written in Python"
 authors = ["Dmitrii Khramtsov <dmitrypkh@gmail.com>"]
 license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/dmikhr/tiempo-tracker"
+repository = "https://github.com/dmikhr/tiempo-tracker"
+keywords = ["time tracker", "management", "CLI"]
 
 packages = [{ include = "time_tracker" }]
 classifiers = [
-  'Environment :: Console'
+  'Environment :: Console',
+  'Development Status :: 4 - Beta'
 ]
 
 [tool.poetry.scripts]
