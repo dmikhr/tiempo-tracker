@@ -1,23 +1,19 @@
+test:
+	poetry run pytest
+
 install:
 	poetry install
-
-build:
-	poetry build
-
-publish:
-	poetry publish --dry-run
 
 package-install:
 	python3 -m pip install --user dist/*.whl
 
-# to install the same version again
-# rebuild before installing
+# to install the same version again for testing behavior of installed app
 package-reinstall:
 	make build
 	python3 -m pip install --user --force-reinstall dist/*.whl
 
-lint:
-	poetry run flake8 brain_games
+build:
+	poetry build
 
-test:
-	poetry run pytest
+publish-test:
+	poetry publish --dry-run
