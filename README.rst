@@ -1,28 +1,38 @@
 Introduction
 =========================
 Track time you've spent on different tasks. Then see how much time you've spent on each. 
+
 Continuation of `time_management <https://github.com/dmikhr/time_management>`_ script idea.
 
 
 **Development**
 =========================
 Built with Python, Poetry, SQLAlchemy for managing database, SQLite as database. 
+
 Testing: Pytest
+
 Run package without building: ``poetry run python -m time_tracker [options]`` in the project directory
+
 Example: ``poetry run python -m time_tracker -a Task1``
+
 Run tests: ``poetry run pytest``
 
 
 **Installation**
 =========================
 **From source**
+
 run ``make build`` and then ``make package-install`` in the package directory.
 
 **PIP**
+
 run ``pip install tiempo-tracker``
 
 When you run app for the first time it will create database. You'll see a message:
-``Database not found. Creating new one``. Also app will show path where database is stored.
+
+``Database not found. Creating new one``. 
+
+Also app will show path where database is stored.
 
 
 **Usage**
@@ -51,19 +61,24 @@ Then track the task:
 
 To finish the task either start new one (add new task first if it doesn't exist yet):
 ``trt -s task2``
+
 or finish task
+
 ``trt -f``
+
 Show all added tasks:
+
 ``trt -l``
+
 If particular task is in progress there will be ``(in progress)`` status behind this task. Example:
-``````
-Project_work
-Exercising (in progress)
-Flask_API_project
-Some_task
-``````
+::
+    Project_work
+    Exercising (in progress)
+    Flask_API_project
+    Some_task
 
 Remove task if it's no longer needed:
+
 ``trt -r``
 
 See how much time you've spent on each task during the day:
