@@ -44,6 +44,7 @@ Also app will show path where database is stored.
 tiempo-tracker can be invoked by ``trt`` command in terminal.
 Available options:
 ::
+
     -h, --help            show this help message and exit
     -s START, --start START
                             Start task by providing its name
@@ -58,9 +59,11 @@ Available options:
 
 
 Start with adding new task:
+
 ``trt -a task1``
 
 Then track the task:
+
 ``trt -s task1``
 
 To finish the task either start new one (add new task first if it doesn't exist yet):
@@ -77,6 +80,7 @@ Show all added tasks:
 
 If particular task is in progress there will be ``(in progress)`` status behind this task. Example:
 ::
+
     Project_work
     Exercising (in progress)
     Flask_API_project
@@ -87,5 +91,7 @@ Remove task if it's no longer needed:
 ``trt -r``
 
 See how much time you've spent on each task during the day:
+
 ``trt -st``
-Time will be presented in two formats ``hr:min`` and as decimal number. The latter is convenient if you track your time in spreadsheet and analyze it (how much time was spend on each task during different periods of time, visualization, etc.).
+
+Time will be presented in two formats: ``hr:min`` and as decimal number. The latter is convenient if you track your time in spreadsheets.
