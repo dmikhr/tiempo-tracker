@@ -34,7 +34,7 @@ run ``pip install tiempo-tracker``
 
 When you run app for the first time it will create a database. You'll see a message:
 
-``Database not found. Creating new one``. 
+``Database not found. Creating new one``
 
 Also app will show path where database is stored.
 
@@ -78,7 +78,7 @@ Show all added tasks:
 
 ``trt -l``
 
-If particular task is in progress there will be ``(in progress)`` status behind this task. Example:
+If particular task is in progress there will be ``(in progress)`` status near this task. Example:
 ::
 
     Project_work
@@ -88,7 +88,7 @@ If particular task is in progress there will be ``(in progress)`` status behind 
 
 Remove task if it's no longer needed:
 
-``trt -r``
+``trt -r task1``
 
 See how much time you've spent on each task during the day:
 
