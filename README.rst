@@ -32,7 +32,7 @@ run ``make build`` and then ``make package-install`` in the package directory.
 
 run ``pip install tiempo-tracker``
 
-When you run app for the first time it will create database. You'll see a message:
+When you run app for the first time it will create a database. You'll see a message:
 
 ``Database not found. Creating new one``. 
 
@@ -41,7 +41,7 @@ Also app will show path where database is stored.
 
 **Usage**
 =========================
-tiempo-tracker can be invoked by ``trt`` command in terminal.
+tiempo-tracker can be invoked by ``trt`` command in the terminal.
 Available options:
 ::
 
@@ -66,7 +66,7 @@ Then track the task:
 
 ``trt -s task1``
 
-To finish the task either start new one (add new task first if it doesn't exist yet):
+To finish the task either start a new one (add new task first if it doesn't exist yet):
 
 ``trt -s task2``
 
@@ -94,4 +94,4 @@ See how much time you've spent on each task during the day:
 
 ``trt -st``
 
-Time will be presented in two formats: ``hr:min`` and as decimal number. The latter is convenient if you track your time in spreadsheets.
+Time will be presented in two formats: ``hr:min`` and as a decimal number. The latter is convenient for further storage in spreadsheets.
