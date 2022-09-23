@@ -46,6 +46,11 @@ class TimeTracker:
     # @check(error_msg)
     def task_remove(self, name):
         """remove task"""
+        if self._any_active_task():
+            active_block = self._get_active_block()
+            active_task = self._get_active_task(active_block)
+            if active_task.name == name:
+                return f"Can't delete task {name} while it's active"
         if self._task_exists(name):
             task_id = self._task_id(name)
             # to-do: wrap in transaction
@@ -148,10 +153,8 @@ class TimeTracker:
         # to-do: refactor task_finish and task_status
         if not self._any_active_task():
             return 'No task is active'
-        active_block = self.session.query(WorkBlock).\
-                                   filter(WorkBlock.finish_time == None).one()
-        active_task = self.session.query(Task).\
-                                   filter(Task.id == active_block.task_id).one()
+        active_block = self._get_active_block()
+        active_task = self._get_active_task(active_block)
         return (f'Task in progress: {active_task.name}'
                 f'\nCurrent session time: {self._time_active_last(active_block.start_time, int(time.time()))}'
                 f'\nTime in task today: {self._time_active_today(active_task.id)}'
@@ -159,6 +162,12 @@ class TimeTracker:
 
     def _any_active_task(self):
         return len(self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).all()) == 1
+
+    def _get_active_block(self):
+        return self.session.query(WorkBlock).filter(WorkBlock.finish_time == None).one()
+
+    def _get_active_task(self, active_block):
+        return self.session.query(Task).filter(Task.id == active_block.task_id).one()
 
     def _time_active_last(self, start_time, finish_time):
         time_delta = finish_time - start_time
