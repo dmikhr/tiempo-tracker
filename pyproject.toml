@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tiempo-tracker"
-version = "0.1.0"
+version = "0.1.1"
 description = "Easy to use CLI time tracker written in Python"
 authors = ["Dmitrii Khramtsov <dmitrypkh@gmail.com>"]
 license = "MIT"
