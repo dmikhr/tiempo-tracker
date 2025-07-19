@@ -1,17 +1,15 @@
-.. image:: https://api.codeclimate.com/v1/badges/bd649a97a34c7f8c4634/maintainability
-   :target: https://codeclimate.com/github/dmikhr/tiempo-tracker/maintainability
-   :alt: Maintainability
-
 Introduction
 =========================
 Track time you've spent on different tasks. Then see how much time you've spent on each. 
 
 Continuation of `time_management <https://github.com/dmikhr/time_management>`_ script idea.
 
+📝 In this article, I describe my journey building the tiempo-tracker app: motivation, challenges and lessons learned: `Building CLI time tracker with Python https://dev.to/dmikhr/building-cli-time-tracker-with-python-o0g`_
+
 
 **Development**
 =========================
-Built with Python, Poetry, SQLAlchemy for managing database, SQLite as database. 
+Built with Python, Poetry, SQLAlchemy for database management, SQLite as database. 
 
 Testing: Pytest
 
@@ -32,7 +30,7 @@ run ``make build`` and then ``make package-install`` in the package directory.
 
 run ``pip install tiempo-tracker``
 
-When you run app for the first time it will create a database. You'll see a message:
+When you run app for the first time, it will create a database. You'll see a message:
 
 ``Database not found. Creating new one``
 
@@ -78,7 +76,7 @@ Show all added tasks:
 
 ``trt -l``
 
-If particular task is in progress there will be ``(in progress)`` status near this task. Example:
+If a particular task is in progress, there will be ``(in progress)`` status near this task. Example:
 ::
 
     Project_work
